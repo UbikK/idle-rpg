@@ -1,0 +1,2 @@
+# idle-rpg
+interview project
