@@ -1,0 +1,19 @@
+{
+  "name": "idle-rpg",
+  "version": "1.0.0",
+  "description": "theTribe interview project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/UbikK/idle-rpg.git"
+  },
+  "author": "acn",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UbikK/idle-rpg/issues"
+  },
+  "homepage": "https://github.com/UbikK/idle-rpg#readme"
+}
