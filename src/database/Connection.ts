@@ -1,11 +1,10 @@
 import { Client } from "pg";
+import Constants from "../constants";
 
 class DBConnection{
     client: Client = new Client({
-        host: 'db',
-        database: process.env.POSTGRES_DB,
-        user: process.env.POSTGRES_USER,
-        password: process.env.POSTGRES_PASSWORD
+        connectionString:Constants.db_uri, 
+        ssl: { rejectUnauthorized: false }
     });
     contructor(){}
 }

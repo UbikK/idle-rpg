@@ -24,7 +24,7 @@ export default class Character {
 }
 
 export const CharacterType = new GraphQLObjectType({
-    name: 'User',
+    name: 'Character',
     fields: {
         id: {type: GraphQLString},
         name: {type: GraphQLString},

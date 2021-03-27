@@ -9,7 +9,6 @@ router.get('/', (req, res, next) => {
 })
 router.use('/graphql', graphqlHTTP({
     schema: schema,
-    rootValue: root,
     graphiql: true
 }))
 

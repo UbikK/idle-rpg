@@ -1,8 +1,7 @@
-import { buildSchema, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
-import {UserType} from './User';
-import {createUser} from '../services/UserService';
+import { buildSchema, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
+import User, {UserInputType, UserType} from './entities/User';
 
-/* const schema: GraphQLSchema = new GraphQLSchema({
+const schema: GraphQLSchema = new GraphQLSchema({
     query: new GraphQLObjectType({
         name: 'Query',
         fields: {
@@ -10,7 +9,8 @@ import {createUser} from '../services/UserService';
                 type: UserType,
                 args: {
                     id: {type: GraphQLString}
-                }
+                },
+                resolve: (_, {id}) => User.getById(id)
             }
         }
     }),
@@ -19,31 +19,19 @@ import {createUser} from '../services/UserService';
         fields: {
             createUser: {
                 type: UserType,
-                resolve: (_, {username, pwd}) => {
-                    return createUser({username, pwd})
+                args: {
+                    user: {
+                      type: new GraphQLNonNull(UserInputType),
+                    },
+                  },
+                resolve: (_, {user:{username, pwd}}) => {
+                    return User.createUser({username, pwd})
                 }
             }
         }
     })
-}) */
+})
 
-const schema: GraphQLSchema = buildSchema(`
-    type User {
-        id: ID
-        username: String!
-        pwd: String!
-    }
-
-    
-
-    type Query {
-        getUser(id: ID!): User
-    }  
-    
-    type Mutation {
-        createUser(input: User): User
-    }
-`)
 export default schema;
 
 /* type Character {
