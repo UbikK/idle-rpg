@@ -1,27 +1,83 @@
-import { GraphQLInt, GraphQLObjectType, GraphQLString } from "graphql";
+import { GraphQLInputObjectType, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
+import { BaseEntity, Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
-import { UserType } from "./User";
+import { CHAR_TYPE } from "../../constants";
+import logger from "../../logger";
+import User, { UserInputType, UserType } from "./User";
 
-export default class Character {
+@Entity({schema: 'public', name:'character'})
+export default class Character extends BaseEntity{
+
+    @PrimaryColumn({type: 'uuid', name: 'id'})
     id?: string;
-    name: string;
-    skillpoints: number;
-    health: number;
-    attack: number;
-    defense: number;
-    magik: number;
+
+    @Column({type: 'varchar', name: 'name'})
+    name?: string;
+
+    skillpoints?: number;
+
+    @Column({type: 'int4', name: 'health'})
+    health?: number;
+
+    @Column({type: 'int4', name: 'health'})
+    attack?: number;
+
+    @Column({type: 'int4', name: 'health'})
+    defense?: number;
+
+    @Column({type: 'int4', name: 'health'})
+    magik?: number;
+
+    @Column({type: 'varchar', name: 'type', enum: CHAR_TYPE })
+    type?: CHAR_TYPE;
+
+    @Column({type: 'uuid', name: 'userid'})
     userId?: string;
 
-    constructor(data: Character){
+    @Column({type: 'timestamp', name: 'lastdefeat'})
+    lastDefeat?: string;
+
+    @OneToMany(() => User, user => user.characters)
+    @JoinColumn({name: 'userId', referencedColumnName: 'id'})
+    user?: User
+
+    constructor(){
+        super();
         this.id = v4();
-        this.name = data.name;
-        this.skillpoints = 12;
-        this.health = data.health;
-        this.defense = data.defense;
-        this.magik = data.magik
-        this.attack = data.attack;
     }
+
+    static async createChar(data: any){
+        try {
+            const char = new Character();
+            char.health = data.health;
+            char.attack = data.attack;
+            char.defense = data.defense;
+            char.magik = data.magik;
+            char.userId = data.userId ?? undefined;
+            char.type = char.userId? CHAR_TYPE.PC : CHAR_TYPE.ENEMY;
+    
+            return await char.save();
+        } catch (e) {
+            logger.error(e);
+            throw e;
+        }
+    }
+
+    static getCharacterById(id: string){
+        return this.findOne(id);
+    }
+
+    static getEnemies(){
+        return this.find({type: CHAR_TYPE.ENEMY});
+    }
+
+    static async createEnemies(list: any[]){
+        return Promise.all(list.map((c) => Character.createChar(c)));
+    }
+
 }
+
+
 
 export const CharacterType = new GraphQLObjectType({
     name: 'Character',
@@ -32,6 +88,20 @@ export const CharacterType = new GraphQLObjectType({
         health: {type: GraphQLInt},
         defense: {type: GraphQLInt},
         magik: {type: GraphQLInt},
-        user: { type: UserType}
+        user: { type: UserType},
+        lastDefeat: {type: GraphQLString}
     }
 })
+
+export const CharInputType = new GraphQLInputObjectType({
+    name: 'CharacterInput',
+    fields: {
+      name: { type: GraphQLString },
+      id: { type: GraphQLString },
+      health: {type: GraphQLInt},
+      defense: {type: GraphQLInt},
+      magik: {type: GraphQLInt},
+      userId: { type: GraphQLString},
+      user: { type: UserInputType}
+    }
+  });

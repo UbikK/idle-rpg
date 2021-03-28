@@ -1,9 +1,12 @@
 import { hashSync } from "bcrypt";
-import { GraphQLInputObjectType, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
-import { BaseEntity, Column, Entity, getManager, PrimaryColumn } from "typeorm";
+import { GraphQLInputObjectType, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLString } from "graphql";
+import { sign } from "jsonwebtoken";
+import { BaseEntity, Column, Entity, getManager, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
+import Constants from "../../constants";
 import logger from "../../logger";
-import { db } from "../Connection";
+import { getLoginToken } from "../../utils";
+import Character from "./Character";
 
 @Entity({schema: 'public', name: 'user'})
 export default class User extends BaseEntity {
@@ -17,17 +20,25 @@ export default class User extends BaseEntity {
     @Column({type: 'varchar', name: 'password'})
     password?: string;
 
+    @OneToMany(() => Character, c => c.user)
+    characters?: Character[]
+
+    token?: string;
+
     constructor(){
         super();
         this.id = v4();
     }
 
-    static createUser(data: {username: string, pwd: string}){
+    static async createUser(data: {username: string, pwd: string}){
         try {
-            const user = new User();
+            let user = new User();
             user.username = data.username;
             user.password = hashSync(data.pwd, 256);
-            return user.save();
+            
+            user = await user.save();
+            user.token = getLoginToken(user);
+            return user;
         } catch(e){
             logger.error(e);
             throw e;
@@ -35,8 +46,27 @@ export default class User extends BaseEntity {
         
     }
 
-    static getById(id: string){
+    static getById(id: string): Promise<User | undefined>{
         return this.findOne(id);
+    }
+
+    static async getByUsername(username: string): Promise<User>{
+        try {
+            return await this.createQueryBuilder('user').where('username = :data', {data: username}).getOneOrFail();
+        } catch(e) {
+            logger.error(e);
+            throw e;
+        }
+    }
+
+    static async getCharacterList(userId: string): Promise<Character[] | undefined>{
+        try {
+            const user = await this.findOne(userId, {relations: ['characters']});
+            return user?.characters;
+        } catch (e) {
+            logger.error(e);
+            throw e;
+        }
     }
 }
 
@@ -45,7 +75,8 @@ export const UserType = new GraphQLObjectType({
     fields: {
         id: {type: GraphQLString},
         username: {type: GraphQLString},
-        password: {type: GraphQLString}
+        password: {type: GraphQLString},
+        token: {type: GraphQLString}
     }
 })
 
