@@ -17,6 +17,12 @@ export default class User extends BaseEntity {
     @Column({type: 'varchar', name:'username'})
     username?: string;
 
+    @Column({type: 'varchar', name:'firstname'})
+    firstName?: string;
+
+    @Column({type: 'varchar', name:'lastname'})
+    lastName?: string;
+
     @Column({type: 'varchar', name: 'password'})
     password?: string;
 
@@ -30,12 +36,13 @@ export default class User extends BaseEntity {
         this.id = v4();
     }
 
-    static async createUser(data: {username: string, pwd: string}){
+    static async createUser(data: {username: string, pwd: string, firstname: string, lastname: string}){
         try {
             let user = new User();
             user.username = data.username;
             user.password = hashSync(data.pwd, 256);
-            
+            user.firstName = data.firstname;
+            user.lastName = data.lastname;
             user = await user.save();
             user.token = getLoginToken(user);
             return user;
@@ -75,7 +82,6 @@ export const UserType = new GraphQLObjectType({
     fields: {
         id: {type: GraphQLString},
         username: {type: GraphQLString},
-        password: {type: GraphQLString},
         token: {type: GraphQLString}
     }
 })
@@ -85,5 +91,7 @@ export const UserInputType = new GraphQLInputObjectType({
     fields: {
       username: { type: new GraphQLNonNull(GraphQLString) },
       pwd: { type: new GraphQLNonNull(GraphQLString) },
+      firstname: { type: new GraphQLNonNull(GraphQLString) },
+      lastname: { type: new GraphQLNonNull(GraphQLString) },
     }
   });

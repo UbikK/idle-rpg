@@ -1,8 +1,8 @@
-import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLSchema, GraphQLSchemaConfig, GraphQLString } from "graphql";
-import Character, { CharacterType, CharInputType } from "./entities/Character";
+import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
+import { LoginInputType, login } from "../services/LoginService";
+import Character, { CharacterType } from "./entities/Character";
 import User, {UserInputType, UserType} from './entities/User';
-
-export const userSchema: GraphQLSchema = new GraphQLSchema({
+export const schema: GraphQLSchema = new GraphQLSchema({
     query: new GraphQLObjectType({
         name: 'Query',
         fields: {
@@ -12,31 +12,7 @@ export const userSchema: GraphQLSchema = new GraphQLSchema({
                     id: {type: GraphQLString}
                 },
                 resolve: async (_, {id}) => await User.getById(id)
-            }
-        }
-    }),
-    mutation: new GraphQLObjectType({
-        name: 'Mutation',
-        fields: {
-            createUser: {
-                type: UserType,
-                args: {
-                    user: {
-                      type: new GraphQLNonNull(UserInputType),
-                    },
-                  },
-                resolve: async (_, {user:{username, pwd}}) => {
-                    return await User.createUser({username, pwd})
-                }
-            }
-        }
-    })
-});
-
-export const characterSchema: GraphQLSchema = new GraphQLSchema({
-    query: new GraphQLObjectType({
-        name: 'Query',
-        fields: {
+            },
             characters: {
                 type: GraphQLList(CharacterType),
                 args: {
@@ -60,6 +36,28 @@ export const characterSchema: GraphQLSchema = new GraphQLSchema({
     mutation: new GraphQLObjectType({
         name: 'Mutation',
         fields: {
+            signup: {
+                type: UserType,
+                args: {
+                    user: {
+                      type: new GraphQLNonNull(UserInputType),
+                    },
+                  },
+                resolve: async (_, {user:{username, pwd, firstname, lastname}}) => {
+                    return await User.createUser({username, pwd, firstname, lastname})
+                }
+            },
+            login: {
+                type: GraphQLString,
+                args: {
+                    user: {
+                      type: new GraphQLNonNull(LoginInputType),
+                    },
+                  },
+                resolve: async (_, {user:{username, pwd}}) => {
+                    return await login({username, pwd})
+                }
+            },
             createPlayerChar: {
                 type: CharacterType,
                 args: {
@@ -71,6 +69,41 @@ export const characterSchema: GraphQLSchema = new GraphQLSchema({
                 },
                 resolve: async (_, {input}) => await Character.createChar(input)
             }
+        }
+    })
+})
+/* export const userSchema: GraphQLSchema = new GraphQLSchema({
+    
+});
+
+export const loginSchema: GraphQLSchema = new GraphQLSchema({
+    query: new GraphQLObjectType({
+        name: 'Query',
+        fields: {
+            token: {
+                type: GraphQLString,
+            }
+        }
+    }),
+    mutation: new GraphQLObjectType({
+        name: 'Mutation',
+        fields: {
+            
+        }
+    })
+}) */
+
+export const characterSchema: GraphQLSchema = new GraphQLSchema({
+    query: new GraphQLObjectType({
+        name: 'Query',
+        fields: {
+            
+        }
+    }),
+    mutation: new GraphQLObjectType({
+        name: 'Mutation',
+        fields: {
+            
             
             /* ,
             createEnemies: {

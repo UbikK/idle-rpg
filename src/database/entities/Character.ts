@@ -78,7 +78,6 @@ export default class Character extends BaseEntity{
 }
 
 
-
 export const CharacterType = new GraphQLObjectType({
     name: 'Character',
     fields: {
@@ -86,9 +85,10 @@ export const CharacterType = new GraphQLObjectType({
         name: {type: GraphQLString},
         skillpoints: {type: GraphQLInt},
         health: {type: GraphQLInt},
+        attack:{type: GraphQLInt},
         defense: {type: GraphQLInt},
         magik: {type: GraphQLInt},
-        user: { type: UserType},
+        userId: {type: GraphQLString},
         lastDefeat: {type: GraphQLString}
     }
 })
