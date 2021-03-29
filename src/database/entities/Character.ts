@@ -1,5 +1,5 @@
 import { GraphQLInputObjectType, GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from "graphql";
-import { BaseEntity, Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
 import { CHAR_TYPE } from "../../constants";
 import logger from "../../logger";
@@ -37,8 +37,8 @@ export default class Character extends BaseEntity{
     @Column({type: 'timestamp', name: 'lastdefeat'})
     lastDefeat?: string;
 
-    @OneToMany(() => User, user => user.characters)
-    @JoinColumn({name: 'userId', referencedColumnName: 'id'})
+    @ManyToOne(() => User, user => user.characters)
+    @JoinColumn({name: 'userid', referencedColumnName: 'id'})
     user?: User
 
     constructor(){

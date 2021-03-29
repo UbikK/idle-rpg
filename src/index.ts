@@ -13,7 +13,7 @@ async function startApolloServer(){
       await server.start();
 
       const port = process.env.PORT ?? 24269;
-      app.use(PinoHttp({prettyPrint:true}))
+      //app.use(PinoHttp({prettyPrint:true}))
       app.set('port', port);
 
       server.applyMiddleware({ app });
