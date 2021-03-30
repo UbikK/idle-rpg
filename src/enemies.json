@@ -1,0 +1,58 @@
+[
+    {
+        "name": "Rat",
+        "rank": 1,
+        "health": 10,
+        "attack": 2,
+        "defense": 0,
+        "magik": 0
+    },
+    {
+        "name": "Loup",
+        "rank": 3,
+        "health": 15,
+        "attack": 5,
+        "defense": 2,
+        "magik": 0
+    },
+    {
+        "name": "Gobelin",
+        "rank": 4,
+        "health": 20,
+        "attack": 10,
+        "defense": 5,
+        "magik": 2
+    },
+    {
+        "name": "Araignée",
+        "rank": 2,
+        "health": 12,
+        "attack": 3,
+        "defense": 0,
+        "magik": 0
+    },
+    {
+        "name": "Orc",
+        "rank": 6,
+        "health": 25,
+        "attack": 15,
+        "defense": 10,
+        "magik": 0
+    },
+    {
+        "name": "Uruk",
+        "rank": 10,
+        "health": 30,
+        "attack": 20,
+        "defense": 15,
+        "magik": 5
+    },
+    {
+        "name": "Magicien",
+        "rank": 20,
+        "health": 15,
+        "attack": 2,
+        "defense": 20,
+        "magik": 20
+    }
+]

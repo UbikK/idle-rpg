@@ -1,6 +1,6 @@
 import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
 import { LoginInputType, login } from "../services/LoginService";
-import Character, { CharacterType } from "./entities/Character";
+import Character, { CharacterType, CharInputType, selectOpponent } from "./entities/Character";
 import User, {UserInputType, UserType} from './entities/User';
 export const schema: GraphQLSchema = new GraphQLSchema({
     query: new GraphQLObjectType({
@@ -30,6 +30,13 @@ export const schema: GraphQLSchema = new GraphQLSchema({
             enemies: {
                 type: CharacterType,
                 resolve: async (_)=> await Character.getEnemies()
+            },
+            opponent: {
+                type: CharacterType,
+                args: {
+                    charId: {type: GraphQLString}
+                },
+                resolve: async (_, {charId})=> await selectOpponent(charId)
             }
         }
     }),
@@ -58,16 +65,12 @@ export const schema: GraphQLSchema = new GraphQLSchema({
                     return await login({username, pwd})
                 }
             },
-            createPlayerChar: {
+            editCharacter: {
                 type: CharacterType,
                 args: {
-                    name: {type: GraphQLString},
-                    health: {type: GraphQLInt},
-                    defense: {type: GraphQLInt},
-                    magik: {type: GraphQLInt},
-                    userId: { type: GraphQLString}
+                    character: {type: new GraphQLNonNull(CharInputType)}
                 },
-                resolve: async (_, {input}) => await Character.createChar(input)
+                resolve: async (_, {character}) => await Character.createOrEditChar(character)
             }
         }
     })
