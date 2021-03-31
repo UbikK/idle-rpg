@@ -4,10 +4,13 @@
   "description": "theTribe interview project",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node ./dist/index.js",
-    "start:dev": "nodemon ./dist/index.js",
-    "build": "tsc",
+    "start": "node ./server/dist/index.js",
+    "start:dev": "nodemon ./server/dist/index.js",
+    "build:server": "tsc",
+    "build": "npm run build:front && npm run build:server",
     "build:watch": "tsc --watch",
+    "start:front": "npm --prefix ./client run start",
+    "build:front": "npm --prefix ./client run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

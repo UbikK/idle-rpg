@@ -1,6 +1,6 @@
 import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
 import { LoginInputType, login } from "../services/LoginService";
-import Character, { CharacterType, CharInputType, selectOpponent } from "./entities/Character";
+import Character, { CharacterType, CharInputType, FightSettingType, selectOpponent } from "./entities/Character";
 import User, {UserInputType, UserType} from './entities/User';
 export const schema: GraphQLSchema = new GraphQLSchema({
     query: new GraphQLObjectType({
@@ -31,8 +31,8 @@ export const schema: GraphQLSchema = new GraphQLSchema({
                 type: CharacterType,
                 resolve: async (_)=> await Character.getEnemies()
             },
-            opponent: {
-                type: CharacterType,
+            fight: {
+                type: FightSettingType,
                 args: {
                     charId: {type: GraphQLString}
                 },
@@ -106,16 +106,6 @@ export const characterSchema: GraphQLSchema = new GraphQLSchema({
     mutation: new GraphQLObjectType({
         name: 'Mutation',
         fields: {
-            
-            
-            /* ,
-            createEnemies: {
-                type: CharacterType,
-                args:{
-                    list: {type: GraphQLList(CharInputType)}
-                },
-                resolve: async (_, {input}) => Character.createEnemies(input)
-            } */
         }
     })
 });

@@ -3,6 +3,7 @@ import { sign } from "jsonwebtoken";
 import Constants from "./constants";
 import Character from "./database/entities/Character";
 import User from "./database/entities/User";
+import logger from "./logger";
 
 export function getLoginToken(user: User){
     return sign(
@@ -26,7 +27,7 @@ export function roll(maxValue: number){
 }
 
 export function sortListByCriteria(list: {[key: string]: any}[], criteria: {name: string, value: Function}) {
-    const result: {key: number, list: any[]}[] = [];
+    let result: {key: number, list: any[]}[] = [];
 
     list.map((c) => {
         const key = Math.abs(criteria.value(c[criteria.name]));
@@ -42,37 +43,15 @@ export function sortListByCriteria(list: {[key: string]: any}[], criteria: {name
         }
         tierList.list.push(c);
     });
-    return result;
-    
-    /* return list.sort((a, b) => {
-        
-        // by closest rank
-        const aRankDiff = Math.abs(a.rank as number - playerRank);
-        const bRankDiff = Math.abs(b.rank as number - playerRank);
-        
-        if (aRankDiff < bRankDiff){
-            return -1
-            
-        }
 
-        if (aRankDiff > bRankDiff){
+    result = result.sort((i, j) => {
+        if(i.key < j.key){
+            return -1;
+        }
+        if(i.key > j.key){
             return 1;
         }
-
-        // by number of fights with player
-        if (a.fightsAsEnemy && b.fightsAsEnemy) {
-            const aFightsWithPlayer = a.fightsAsEnemy?.filter((f) => f.playerCharacterId === playerId).length as number;
-            const bFightsWithPLayer = b.fightsAsEnemy?.filter((f) => f.playerCharacterId === playerId).length as number;
-            if (aFightsWithPlayer < bFightsWithPLayer){
-                return -1;
-            }
-    
-            if (aFightsWithPlayer > bFightsWithPLayer){
-                return 1;
-            }
-        }
-        
-
         return 0;
-    }); */
+    });
+    return result;
 }

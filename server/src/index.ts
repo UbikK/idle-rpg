@@ -7,6 +7,8 @@ import { ApolloServer } from "apollo-server-express";
 import { schema } from "./database/Schema";
 import router from "./router";
 import cors from "cors";
+import {join} from 'path';
+
 async function startApolloServer() {
   const app: Application = express();
   const server = new ApolloServer({
@@ -16,19 +18,15 @@ async function startApolloServer() {
 
   const port = process.env.PORT ?? 24269;
   //app.use(PinoHttp({prettyPrint:true}))
+  console.log(join(__dirname, '../../client/build'))
+  app.use(express.static(join(__dirname, '../../client/build')));
   app.set("port", port);
   app.use("/api", cors(), json(), router);
+  //if (process.env.NODE_ENV === 'production') {
+    
+  //}
   server.applyMiddleware({ app });
 
-  /* app.use(cors());
-      app.use(json({
-          type: 'application/json',
-      }));
-      
-      app.use(urlencoded({
-          type: 'application/x-www-form-urlencoded',
-          extended: true
-      })); */
   await new Promise((resolve) =>
     app.listen(app.get("port"), async () => {
       try {
@@ -37,7 +35,7 @@ async function startApolloServer() {
           url: Constants.db_uri,
           ssl: { rejectUnauthorized: false },
           entities: [`${__dirname}/database/entities/**/*`],
-          logging: 'all'
+          //logging: 'all'
         });
       } catch (e) {
         logger.error(e);
@@ -53,6 +51,7 @@ async function startApolloServer() {
 startApolloServer()
   .then(() => {
     logger.info("up and running");
+    console.log(join(__dirname, '../client/build'))
   })
   .catch((e) => {
     console.error(e);
