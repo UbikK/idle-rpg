@@ -7,10 +7,9 @@
     "start": "node ./server/dist/index.js",
     "start:dev": "nodemon ./server/dist/index.js",
     "build:server": "tsc",
-    "build": "npm run install:front && npm run build:front && npm run build:server",
+    "build": "tsc",
     "build:watch": "tsc --watch",
     "start:front": "npm --prefix ./client run start",
-    "install:front": "npm --prefix ./client install",
     "build:front": "npm --prefix ./client run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
