@@ -1,7 +1,9 @@
-import { GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLSchema, GraphQLString } from "graphql";
+import { GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLSchema, GraphQLString } from "graphql";
 import { LoginInputType, login } from "../services/LoginService";
-import Character, { CharacterType, CharInputType, FightSettingType, selectOpponent } from "./entities/Character";
-import User, {UserInputType, UserType} from './entities/User';
+import Character, { selectOpponent } from "./entities/Character";
+import Fight from "./entities/Fight";
+import User from './entities/User';
+import { UserType, CharacterType, FightSettingType, FightType, UserInputType, CharInputType } from "./Types";
 export const schema: GraphQLSchema = new GraphQLSchema({
     query: new GraphQLObjectType({
         name: 'Query',
@@ -23,7 +25,8 @@ export const schema: GraphQLSchema = new GraphQLSchema({
             character:{
                 type: CharacterType,
                 args: {
-                    id: {type: GraphQLString}
+                    id: {type: GraphQLString},
+                    withFights: {type: GraphQLBoolean}
                 },
                 resolve: async (_, {id}) => await Character.getCharacterById(id)
             },
@@ -31,12 +34,26 @@ export const schema: GraphQLSchema = new GraphQLSchema({
                 type: CharacterType,
                 resolve: async (_)=> await Character.getEnemies()
             },
-            fight: {
+            fightSetting: {
                 type: FightSettingType,
                 args: {
                     charId: {type: GraphQLString}
                 },
                 resolve: async (_, {charId})=> await selectOpponent(charId)
+            },
+            fight: {
+                type: FightType,
+                args: {
+                    fightId: {type: GraphQLString}
+                },
+                resolve: async (_, {fightId}) => await Fight.getFightById(fightId)
+            },
+            fightsForCharacter: {
+                type: GraphQLList(FightType),
+                args: {
+                    charId: {type: GraphQLString}
+                },
+                resolve: async (_, {charId}) => await Fight.getFightsForPlayer(charId)
             }
         }
     }),
@@ -75,55 +92,4 @@ export const schema: GraphQLSchema = new GraphQLSchema({
         }
     })
 })
-/* export const userSchema: GraphQLSchema = new GraphQLSchema({
-    
-});
 
-export const loginSchema: GraphQLSchema = new GraphQLSchema({
-    query: new GraphQLObjectType({
-        name: 'Query',
-        fields: {
-            token: {
-                type: GraphQLString,
-            }
-        }
-    }),
-    mutation: new GraphQLObjectType({
-        name: 'Mutation',
-        fields: {
-            
-        }
-    })
-}) */
-
-export const characterSchema: GraphQLSchema = new GraphQLSchema({
-    query: new GraphQLObjectType({
-        name: 'Query',
-        fields: {
-            
-        }
-    }),
-    mutation: new GraphQLObjectType({
-        name: 'Mutation',
-        fields: {
-        }
-    })
-});
-
-export const roundReportSchema: GraphQLSchema = new GraphQLSchema({
-    query: new GraphQLObjectType({
-        name: 'Query',
-        fields:{
-            
-        }
-    }),
-    mutation: new GraphQLObjectType({
-        name: 'Mutation',
-        fields: {
-            /* executeRound:{
-
-            } */
-        }
-    })
-
-})

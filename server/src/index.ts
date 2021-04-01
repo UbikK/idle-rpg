@@ -35,7 +35,7 @@ async function startApolloServer() {
           url: Constants.db_uri,
           ssl: { rejectUnauthorized: false },
           entities: [`${__dirname}/database/entities/**/*`],
-          //logging: 'all'
+          logging: 'all'
         });
       } catch (e) {
         logger.error(e);

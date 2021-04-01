@@ -1,4 +1,7 @@
+import { DateTime } from "luxon";
+import { In } from "typeorm";
 import Character from "../database/entities/Character";
+import Fight from "../database/entities/Fight";
 import { IAttack } from "../interfaces/Attack.interface";
 import { IAttackReport } from "../interfaces/AttackReport.interface";
 import { ICharacter } from "../interfaces/Character.interface";
@@ -17,7 +20,7 @@ export async function startFight(playerId: string, opponentId: string) {
 
     const winner = reports[reports.length -1].fightStatus === 'won';//reports.find((r) => r.fightStatus === "won")
       
-    Character.postFightUpdate(
+    postFightUpdate(
       player.id as string,
       opponent.id as string,
       winner
@@ -141,4 +144,44 @@ export function executeAttack(
     logger.error(e);
     throw e;
   }
+}
+
+ async function postFightUpdate(playerId: string, opponentId: string, playerWon: boolean){
+  try {
+      const fight = new Fight();
+      fight.enemyCharacterId = opponentId;
+      fight.playerCharacterId = playerId;
+      fight.date = DateTime.now().toSQL();
+      fight.winnerId = playerWon? playerId : opponentId;
+      fight.looserId = playerWon? opponentId : playerId;
+      await fight.save();
+      
+      const chars = await Character.find({where: {id: In([playerId, opponentId])}});
+
+      chars.map((c) => {
+          if(c.id === playerId){
+              let rank = c.rank as number;
+              if(playerWon) {
+                  c.rank = rank +1;
+                  c.skillpoints = c.skillpoints as number + 1;
+              } else {
+                  c.rank = rank > 1 ? rank - 1 : 1;
+                  c.lastFight = DateTime.now().toSQL();
+              }
+          } else {
+              if (playerWon) c.lastFight = DateTime.now().toSQL();
+          }
+          
+          return c;
+      })
+      
+      Character.save(chars);
+      
+      
+  } catch (e) {
+      logger.error(e);
+      throw e;
+  }
+  
+
 }

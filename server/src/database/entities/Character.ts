@@ -1,4 +1,4 @@
-import { GraphQLInputObjectType, GraphQLInt, GraphQLObjectType, GraphQLString } from "graphql";
+import { GraphQLInputObjectType, GraphQLInt, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql";
 import { DateTime } from "luxon";
 import { BaseEntity, Brackets, Column, Entity, In, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
@@ -99,8 +99,21 @@ export default class Character extends BaseEntity{
         }
     }
 
-    static getCharacterById(id: string){
-        return this.findOne(id);
+    static async getCharacterById(id: string, withFight?: boolean){
+        let options = {};
+        if(withFight){
+            options =  {relations:['fightsAsPlayer', 'fightsAsPlayer.winner', 'fightsAsPlayer.looser', 'fightsAsPlayer.player', 'fightsAsPlayer.enemy']}
+        }
+        /* const char = await this.createQueryBuilder('char')
+            .where('char.id::"varchar" = :id', {id: id})
+            .leftJoinAndSelect(Fight, 'fights', 'fights.playerCharacterId::"varchar" = char.Id::"varchar"')
+            .select('fights.playerCharacterId')
+            .addSelect('fights.enemyCharacterId')
+            .addSelect('char.id')
+            .addSelect('char.fightsAsPlayer')
+            .getOne()
+            return char */
+        return this.findOne(id,options);
     }
 
     static getEnemies(){
@@ -111,37 +124,7 @@ export default class Character extends BaseEntity{
         return await Promise.all(list.map((c) => Character.createOrEditChar(c)));
     }
 
-    static async postFightUpdate(playerId: string, opponentId: string, playerWon: boolean){
-        try {
-            const chars = await this.find({where: {id: In([playerId, opponentId])}});
-
-            chars.map((c) => {
-                if(c.id === playerId){
-                    let rank = c.rank as number;
-                    if(playerWon) {
-                        c.rank = rank +1;
-                        c.skillpoints = c.skillpoints as number + 1;
-                    } else {
-                        c.rank = rank > 1 ? rank - 1 : 1;
-                        c.lastFight = DateTime.now().toSQL();
-                    }
-                } else {
-                    if (playerWon) c.lastFight = DateTime.now().toSQL();
-                }
-                
-                return c;
-            })
-            
-            this.save(chars);
-            
-            
-        } catch (e) {
-            logger.error(e);
-            throw e;
-        }
-        
-
-    }
+    
 }
 
 export async function selectOpponent(charId: string): Promise<{player: Character, opponent?: Character}> {
@@ -155,7 +138,7 @@ export async function selectOpponent(charId: string): Promise<{player: Character
         const lastHour = now.minus({hours: 1});
 
         let opList = await Character.createQueryBuilder('ops')
-            .where('id::"varchar" != :playerId', {playerId: player.id})
+            .where('ops.id != :playerId', {playerId: player.id})
             .andWhere(new Brackets((qb) => {
                 qb.where('lastFight < :lastHour', {lastHour: lastHour.toSQL()})
                     .orWhere('lastFight is null')
@@ -197,41 +180,3 @@ export async function selectOpponent(charId: string): Promise<{player: Character
     }
 }
 
-export const CharacterType = new GraphQLObjectType({
-    name: 'Character',
-    fields: {
-        id: {type: GraphQLString},
-        name: {type: GraphQLString},
-        skillpoints: {type: GraphQLInt},
-        rank: {type: GraphQLInt},
-        health: {type: GraphQLInt},
-        attack:{type: GraphQLInt},
-        defense: {type: GraphQLInt},
-        magik: {type: GraphQLInt},
-        userId: {type: GraphQLString},
-        lastFight: {type: GraphQLString}
-    }
-})
-
-export const CharInputType = new GraphQLInputObjectType({
-    name: 'CharacterInput',
-    fields: {
-        id: {type: GraphQLString},
-        name: {type: GraphQLString},
-        health: {type: GraphQLInt},
-        attack: {type: GraphQLInt},
-        defense: {type: GraphQLInt},
-        magik: {type: GraphQLInt},
-        rank: {type: GraphQLInt},
-        skillpoints: {type: GraphQLInt},
-        userId: { type: GraphQLString}
-    }
-  });
-
-export const FightSettingType = new GraphQLObjectType({
-    name: 'FightSetting',
-    fields: {
-        player: {type: CharacterType},
-        opponent: {type: CharacterType}
-    }
-})

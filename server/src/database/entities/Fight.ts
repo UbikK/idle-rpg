@@ -8,16 +8,16 @@ export default class Fight extends BaseEntity {
     @PrimaryColumn({type:'uuid', name: 'id'})
     id?: string;
 
-    @Column({type: 'varchar', name: 'playercharacterid'})
+    @Column({type: 'uuid', name: 'playercharacterid'})
     playerCharacterId?: string;
 
-    @Column({type: 'varchar', name: 'enemycharacterid'})
+    @Column({type: 'uuid', name: 'enemycharacterid'})
     enemyCharacterId?: string;
 
-    @Column({type: 'varchar', name:'winner'})
+    @Column({type: 'uuid', name:'winner'})
     winnerId?: string;
 
-    @Column({type: 'varchar', name:'looser'})
+    @Column({type: 'uuid', name:'looser'})
     looserId?: string;
 
     @Column({type: 'timestamp', name:'date'})
@@ -64,12 +64,24 @@ export default class Fight extends BaseEntity {
         }
     }
 
-    static async getById(id: string){
+    static async getFightById(id: string){
         try{
-            return await this.findOneOrFail(id)
+            return await this.findOneOrFail(id, {relations: ['player', 'enemy', 'winner', 'looser']})
         } catch(e){
             logger.error(e);
             throw e;
         }
     }
+
+    static async getFightsForPlayer(playerId: string){
+        try {
+            return await this.find({where: {playerCharacterId: playerId}, relations: ['player', 'enemy', 'winner', 'looser']})
+        } catch(e) {
+            logger.error(e);
+            throw e;
+        }
+    }
 }
+
+
+

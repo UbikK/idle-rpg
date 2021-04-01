@@ -68,7 +68,17 @@ export default class User extends BaseEntity {
 
     static async getCharacterList(userId: string): Promise<Character[] | undefined>{
         try {
-            const user = await this.findOne(userId, {relations: ['characters']});
+            
+            const options = {relations: [
+                'characters',
+                'characters.fightsAsPlayer', 
+                'characters.fightsAsPlayer.winner', 
+                'characters.fightsAsPlayer.looser', 
+                'characters.fightsAsPlayer.player', 
+                'characters.fightsAsPlayer.enemy'
+            ]}
+        
+            const user = await this.findOne(userId, options);
             return user?.characters;
         } catch (e) {
             logger.error(e);
@@ -77,21 +87,3 @@ export default class User extends BaseEntity {
     }
 }
 
-export const UserType = new GraphQLObjectType({
-    name: 'User',
-    fields: {
-        id: {type: GraphQLString},
-        username: {type: GraphQLString},
-        token: {type: GraphQLString}
-    }
-})
-
-export const UserInputType = new GraphQLInputObjectType({
-    name: 'UserInput',
-    fields: {
-      username: { type: new GraphQLNonNull(GraphQLString) },
-      pwd: { type: new GraphQLNonNull(GraphQLString) },
-      firstname: { type: new GraphQLNonNull(GraphQLString) },
-      lastname: { type: new GraphQLNonNull(GraphQLString) },
-    }
-  });

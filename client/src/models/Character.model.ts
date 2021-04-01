@@ -8,4 +8,5 @@ export default interface Character {
     defense: number;
     magik: number;
     lastFight: string;
+    fights?:any[]
 }

@@ -1,5 +1,5 @@
 import { gql, useLazyQuery } from '@apollo/client';
-import { Button, Grid, makeStyles, Paper } from '@material-ui/core';
+import { Button, Grid, Hidden, makeStyles, Paper, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useJwt } from 'react-jwt';
 import Character from '../models/Character.model';
@@ -49,22 +49,39 @@ const characterListQuery = gql`
     }
 `
 
+const characterFights = gql`
+    query fightsForCharacter($charId: String){
+        fightsForCharacter(charId: $charId){
+            id
+            player{
+                name
+            }
+            enemy{name}
+            winner{id}
+            looser{id}
+            date
+        }
+    }
+`
+
 export default function CharacterSelect(props: any){
     const classes = useStyles();
     const [charList, setCharList] = useState<Character[]>();
     const [character, setCharacter] = useState<Character>();
+    const [fightHistory, setFightHistory] = useState<any>();
     const [userId, setUserId] = useState<string>();
     const [refresh, setRefresh] = useState(false);
     const [openEditor, setOpenEditor] = useState(false);
+    const [displayHisto, setDisplayHisto] = useState(false);
     let auth = useAuth();
     const {decodedToken} = useJwt(auth?.token as string)
 
-    const [getChars, { loading, data }] = useLazyQuery(characterListQuery);
+    const [getChars, { loading, data: characterList }] = useLazyQuery(characterListQuery);
+    const [getFightHistory, {data: fights, error: errorFights}] = useLazyQuery(characterFights);
 
     const isAvailable = (char: Character) => {
         const now = DateTime.now();
         const lastFight = DateTime.fromMillis(parseInt(char?.lastFight as string));
-        console.log(now.diff(lastFight, 'hours'))
             if (now.diff(lastFight, 'hours').hours > 1) {
                 return true
             } else {
@@ -77,13 +94,15 @@ export default function CharacterSelect(props: any){
             setUserId(decodedToken.id)
             getChars({variables: {userId: decodedToken.id}})
         }
-        if(data){
-            console.log(`Character list:: ${JSON.stringify(data)}`)
-            setCharList(data.characters);
+        if(characterList){
+            console.log(`Character list:: ${JSON.stringify(characterList)}`)
+            setCharList(characterList.characters);
         }
-
-        
-    }, [decodedToken, data, getChars, refresh]);
+        if(fights){
+            console.log(`fights:: ${JSON.stringify(fights)}`)
+            setFightHistory(fights.fightsForCharacter)
+        }
+    }, [decodedToken, characterList, getChars, refresh, fights,errorFights]);
 
     if(loading) return (<div>loading</div>);
     const creationOK = charList?.length as number < 10;
@@ -92,7 +111,9 @@ export default function CharacterSelect(props: any){
         const char: Character = charList?.find((c) => c.id === id) as Character;
         
         if(char && isAvailable(char)){
-            setCharacter(char);            
+            setCharacter(char);
+            console.log('getting history')  
+            getFightHistory({variables: {charId: id}}) ;     
         }
     }
 
@@ -136,11 +157,30 @@ export default function CharacterSelect(props: any){
                         <Grid item container justify="center" alignItems="center" direction="column" md={4} className={classes.chargrid}>
                             <CharacterSheet character={character}/>
                         </Grid> 
-                        <div>
+                        <Grid item container alignItems="center" justify="space-evenly" direction="row">
+                            <Button color="primary" variant="outlined" onClick={() => setDisplayHisto(!displayHisto)}>Historique</Button>
                             <Button color="primary" variant="contained" >
                                 <Link to={`/arena?charId=${character.id}`} className={classes.create}>Entrer dans l'arène</Link>
                             </Button> 
-                        </div>
+                        </Grid>
+                        {displayHisto?
+                        <Grid item container direction="column" justify="center" alignItems="center" hidden={displayHisto}>
+                            {
+                                fightHistory?.map((f: any) => {
+                                    return(
+                                        <Paper style={{padding: '1rem'}} key={fightHistory?.indexOf(f)}>
+                                            <Grid container item direction="column" justify="center" alignItems="center">
+                                                <Typography variant="body1">Le {DateTime.fromMillis(parseInt(f.date)).toLocaleString(DateTime.DATETIME_MED)}</Typography>
+                                                <Typography variant="body1">Contre {f.enemy.name}</Typography>
+                                                <Typography variant="body1">{f.winner.id === character.id? 'Victoire' : 'Defaite'}</Typography>
+                                            </Grid>
+                                        </Paper>
+                                    )
+                                })
+                            }
+
+                        </Grid>
+                        : undefined}
                         
                     </>
                 ) : undefined}

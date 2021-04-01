@@ -11,7 +11,7 @@ import CharacterSheet from './CharacterSheet';
 
 const getFightQuery = gql`
     query fight($charId: String!){
-        fight(charId: $charId){
+        fightSetting(charId: $charId){
             player{
                 id,
                 name,
@@ -64,8 +64,8 @@ export default function Arena(){
 
         if (data) {
             console.log(data)
-            setOpponent(data.fight.opponent);
-            setPlayer(data.fight.player);
+            setOpponent(data.fightSetting.opponent);
+            setPlayer(data.fightSetting.player);
         }
         if(combatReport){
             setEndFight(true)
