@@ -20,7 +20,7 @@ jobs:
     - name: 'build client'
       working-directory: ./client
       run: |
-        npm ci
+        npm install
         npm run build
     - run: npm ci
     - run: npm run build --if-present
