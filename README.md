@@ -7,6 +7,9 @@ Mon Petit RPG est un idle RPG écrit en NodeJS et ReactJS, reposant sur une base
 Vous pouvez accéder à l'application live [ici](https://mon-petit-rpg.herokuapp.com/)
 
 ## Mode d'emploi
+### Installation
+ - Cloner le dépôt
+ - Lancer `npm install`
 ### Lancement en local avec hot reload
 Depuis le dossier racine de l'application, lancer les scripts suivants:
  - Build du serveur: `npm run build:watch`
