@@ -1,0 +1,79 @@
+@startuml
+
+Class User {
+    id: uuid
+    lastname: String
+    firstname: String
+    username: String
+    password: String
+    createUser(data: IUser)
+    getById(id: string)
+    getByUsername(email: string)
+    getCharacterList(id: string)
+}
+
+Class Character {
+    id: uuid
+    name: String
+    health: number
+    attack: number
+    defense: number
+    magik: number
+    rank: number
+    skillpoints: number
+    lastFight: timestamp
+    userid: uuid
+    createOrEditChar(data: ICharacter)
+    getCharacterById(id: string)
+    createEnemies(list)
+    selectOpponent(characterId: string)
+}
+
+Class Fight {
+    playerCharacterId: uuid
+    enemyCharacterId: uuid
+    date: timestamp
+    winnerId: uuid
+    looserId: uuid
+    createFight(data: IFight)
+    getFightsForPlayer(playerId)
+    startFight(playerId: string, opponentId: string)
+    postFightUpdate(playerId: string, opponentId: string, playerWon: boolean)
+}
+
+Interface ICharacter {
+    id?: string
+    name?: string
+    health: number
+    attack: number
+    defense: number
+    magik: number
+    rank?: number
+    skillpoints?: number
+    userid?: string
+}
+
+Interface IUser {
+    id?: string
+    lastname: string
+    firstname: string
+    username: string
+    pwd: string
+}
+
+Interface IFight {
+    playerId: string
+    enemyId: string
+    date: string
+    winner: string
+    looser: string
+}
+
+User -down- IUser
+Character -down- ICharacter
+Fight-IFight
+User "1" -left-> "*"Character: > have
+Character"1" -up-> "*"Fight: > as player
+Character"1" -down-> "*"Fight: > as enemy
+
+@enduml

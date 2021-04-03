@@ -1,4 +1,4 @@
-import { gql, useLazyQuery } from '@apollo/client';
+import { gql, useLazyQuery, useQuery } from '@apollo/client';
 import { Button, Grid, Hidden, makeStyles, Paper, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useJwt } from 'react-jwt';
@@ -76,7 +76,7 @@ export default function CharacterSelect(props: any){
     let auth = useAuth();
     const {decodedToken} = useJwt(auth?.token as string)
 
-    const [getChars, { loading, data: characterList }] = useLazyQuery(characterListQuery);
+    const [getChars, { loading, data: characterList }] = useLazyQuery(characterListQuery, {fetchPolicy:'no-cache'});
     const [getFightHistory, {data: fights, error: errorFights}] = useLazyQuery(characterFights);
 
     const isAvailable = (char: Character) => {
@@ -90,7 +90,7 @@ export default function CharacterSelect(props: any){
     }
 
     useEffect(() => {
-        if(decodedToken?.id || refresh) {
+        if((decodedToken?.id || refresh) && !charList) {
             setUserId(decodedToken.id)
             getChars({variables: {userId: decodedToken.id}})
         }

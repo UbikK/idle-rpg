@@ -19,7 +19,13 @@ export const UserInputType = new GraphQLInputObjectType({
     }
   });
 
-
+  export const LoginInputType = new GraphQLInputObjectType({
+    name: "LoginInput",
+    fields: {
+      username: { type: new GraphQLNonNull(GraphQLString) },
+      pwd: { type: new GraphQLNonNull(GraphQLString) },
+    },
+  });
 
 export const CharInputType = new GraphQLInputObjectType({
     name: 'CharacterInput',

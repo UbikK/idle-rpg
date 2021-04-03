@@ -1,0 +1,26 @@
+@startuml
+    start
+        :Select all available characters 
+        different from Player;
+
+        :Order by comparative rank;
+        :Take first result;
+        if(multiple choice?) then 
+            :Order by number of 
+            past fights with the player;
+
+            :Take first result;
+            
+            if(multiple choice) then
+                :Select at random;
+                stop
+            else
+                :Return Result;
+                stop
+            endif
+        else
+            :Return Result;
+            stop
+        endif
+    
+@enduml

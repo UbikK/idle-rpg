@@ -1,7 +1,3 @@
-import { DateTime } from "luxon";
-import { In } from "typeorm";
-import Character from "../database/entities/Character";
-import Fight from "../database/entities/Fight";
 import { IAttack } from "../interfaces/Attack.interface";
 import { IAttackReport } from "../interfaces/AttackReport.interface";
 import { ICharacter } from "../interfaces/Character.interface";
@@ -9,33 +5,7 @@ import { IRound } from "../interfaces/Round.interface";
 import logger from "../logger";
 import { roll } from "../utils";
 
-export const startFight = async (playerId: string, opponentId: string) => {
-  try {
-    const player = (await Character.getCharacterById(playerId)) as ICharacter;
-    const opponent = (await Character.getCharacterById(
-      opponentId
-    )) as ICharacter;
 
-    const reports: IRound[] = await executeRound(player, opponent, []);
-
-    const winner = reports[reports.length -1].fightStatus === 'won';//reports.find((r) => r.fightStatus === "won")
-      
-    postFightUpdate(
-      player.id as string,
-      opponent.id as string,
-      winner
-    );
-
-    return {
-      reportList: reports,
-      numberOfRounds: reports.length,
-      winner: winner,
-    };
-  } catch (e) {
-    logger.error(e);
-    throw e;
-  }
-}
 
 export const executeRound = async (
   player: ICharacter,
@@ -135,42 +105,4 @@ export const executeAttack = (
   }
 }
 
- async function postFightUpdate(playerId: string, opponentId: string, playerWon: boolean){
-  try {
-      const fight = new Fight();
-      fight.enemyCharacterId = opponentId;
-      fight.playerCharacterId = playerId;
-      fight.date = DateTime.now().toSQL();
-      fight.winnerId = playerWon? playerId : opponentId;
-      fight.looserId = playerWon? opponentId : playerId;
-      await fight.save();
-      
-      const chars = await Character.find({where: {id: In([playerId, opponentId])}});
-
-      chars.map((c) => {
-          if(c.id === playerId){
-              let rank = c.rank as number;
-              if(playerWon) {
-                  c.rank = rank +1;
-                  c.skillpoints = c.skillpoints as number + 1;
-              } else {
-                  c.rank = rank > 1 ? rank - 1 : 1;
-                  c.lastFight = DateTime.now().toSQL();
-              }
-          } else {
-              if (playerWon) c.lastFight = DateTime.now().toSQL();
-          }
-          
-          return c;
-      })
-      
-      Character.save(chars);
-      
-      
-  } catch (e) {
-      logger.error(e);
-      throw e;
-  }
-  
-
-}
+ 

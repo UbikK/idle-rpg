@@ -1,4 +1,4 @@
-import { hashSync } from "bcrypt";
+import { compare, hashSync } from "bcrypt";
 import { GraphQLInputObjectType, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLString } from "graphql";
 import { sign } from "jsonwebtoken";
 import { BaseEntity, Column, Entity, getManager, JoinColumn, OneToMany, PrimaryColumn } from "typeorm";
@@ -7,6 +7,7 @@ import Constants from "../../constants";
 import logger from "../../logger";
 import { getLoginToken } from "../../utils";
 import Character from "./Character";
+import { IUser } from './../../interfaces/User.interface';
 
 @Entity({schema: 'public', name: 'user'})
 export default class User extends BaseEntity {
@@ -36,7 +37,7 @@ export default class User extends BaseEntity {
         this.id = v4();
     }
 
-    static async createUser(data: {username: string, pwd: string, firstname: string, lastname: string}){
+    static async createUser(data: IUser){
         try {
             let user = new User();
             user.username = data.username;
@@ -87,3 +88,20 @@ export default class User extends BaseEntity {
     }
 }
 
+export async function login(input: { username: string; pwd: string }) {
+    try {
+      const user: User = await User.getByUsername(input.username);
+  
+      if (user) {
+        const checkPwd = await compare(input.pwd, user.password as string);
+  
+        if (checkPwd) {
+          const token = getLoginToken(user);
+          return token;
+        }
+      }
+    } catch (e) {
+      logger.error(e);
+      throw e;
+    }
+  }

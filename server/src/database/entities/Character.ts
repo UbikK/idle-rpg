@@ -1,7 +1,8 @@
 import { DateTime } from "luxon";
-import { BaseEntity, Column, Entity, In, JoinColumn, LessThan, ManyToOne, Not, OneToMany, PrimaryColumn } from "typeorm";
+import { BaseEntity, Column, Entity, In, IsNull, JoinColumn, LessThan, ManyToOne, Not, OneToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
 import { CHAR_TYPE } from "../../constants";
+import { ICharacter } from "../../interfaces/Character.interface";
 import logger from "../../logger";
 import { roll, sortListByCriteria } from "../../utils";
 import Fight from "./Fight";
@@ -68,7 +69,7 @@ export default class Character extends BaseEntity{
         this.magik = 0;
     }
 
-    static async createOrEditChar(data: any){
+    static async createOrEditChar(data: ICharacter){
         try {
             logger.info(data)
             let char: Character;
@@ -106,10 +107,6 @@ export default class Character extends BaseEntity{
         return this.findOne(id,options);
     }
 
-    static getEnemies(){
-        return this.find({type: CHAR_TYPE.ENEMY});
-    }
-
     static async createEnemies(list: any[]){
         return await Promise.all(list.map((c) => Character.createOrEditChar(c)));
     }
@@ -127,7 +124,12 @@ export const selectOpponent = async (charId: string): Promise<{player: Character
         const now = DateTime.now();
         const lastHour = now.minus({hours: 1});
 
-            const opList = await Character.find({where: {id: Not(charId), lastFight:LessThan(lastHour.toSQL())}})
+            const opList:Character[] = await Character.find(
+                {where: [
+                    {id: Not(charId), lastFight:LessThan(lastHour.toSQL())},
+                    {id: Not(charId), lastFight:IsNull()}
+                    ]
+                })
             logger.info(opList, 'opList')
 
         if (opList.length > 0){

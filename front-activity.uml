@@ -1,0 +1,16 @@
+@startuml
+    start
+    :Home;
+    if(is not logged in) then
+        :Sign In;
+        if (has no account) then
+            :SignUp;
+        endif
+    endif
+    repeat
+    :CharacterSelect;
+    :Arena;
+    backward:Level up;
+    repeat while (won fight?)
+    stop
+@enduml

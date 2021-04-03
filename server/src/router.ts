@@ -1,8 +1,6 @@
 import { Router } from "express";
-import Character, { selectOpponent } from "./database/entities/Character";
-import User from "./database/entities/User";
-import { ICharacter } from "./interfaces/Character.interface";
-import { startFight } from "./services/FightService";
+import Character from "./database/entities/Character";
+import { startFight } from "./database/entities/Fight";
 
 const router = Router();
 router.get('/', async (req, res, next) => {

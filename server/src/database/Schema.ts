@@ -1,9 +1,8 @@
 import { GraphQLBoolean, GraphQLList, GraphQLNonNull, GraphQLObjectType, GraphQLScalarType, GraphQLSchema, GraphQLString } from "graphql";
-import { LoginInputType, login } from "../services/LoginService";
 import Character, { selectOpponent } from "./entities/Character";
 import Fight from "./entities/Fight";
-import User from './entities/User';
-import { UserType, CharacterType, FightSettingType, FightType, UserInputType, CharInputType } from "./Types";
+import User, { login } from './entities/User';
+import { LoginInputType, UserType, CharacterType, FightSettingType, FightType, UserInputType, CharInputType } from "./Types";
 export const schema: GraphQLSchema = new GraphQLSchema({
     query: new GraphQLObjectType({
         name: 'Query',
@@ -29,10 +28,6 @@ export const schema: GraphQLSchema = new GraphQLSchema({
                     withFights: {type: GraphQLBoolean}
                 },
                 resolve: async (_, {id}) => await Character.getCharacterById(id)
-            },
-            enemies: {
-                type: CharacterType,
-                resolve: async (_)=> await Character.getEnemies()
             },
             fightSetting: {
                 type: FightSettingType,
