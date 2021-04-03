@@ -124,7 +124,8 @@ export const selectOpponent = async (charId: string): Promise<{player: Character
                     {id: Not(charId), userId: Not(player.userId), lastFight:IsNull()},
                     {id: Not(charId), userId: IsNull(), lastFight:LessThan(lastHour.toSQL())},
                     {id: Not(charId), userId: IsNull(), lastFight:IsNull()} */
-                    ]
+                    ],
+                    relations:['fightsAsEnemy']
                 })
 
                 const availableFighters = opList.filter((o) => {
