@@ -7,7 +7,7 @@
     "start": "node ./server/dist/index.js",
     "start:dev": "nodemon ./server/dist/index.js",
     "build:server": "tsc",
-    "build": "tsc",
+    "build": "npm test && tsc",
     "build:watch": "tsc --watch",
     "start:front": "npm --prefix ./client run start",
     "build:front": "npm --prefix ./client run build",
