@@ -1,7 +1,6 @@
 import { DateTime } from "luxon";
 import { BaseEntity, Column, Entity, In, IsNull, JoinColumn, LessThan, ManyToOne, Not, OneToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
-import { CHAR_TYPE } from "../../constants";
 import { ICharacter } from "../../interfaces/Character.interface";
 import logger from "../../logger";
 import { roll, sortListByCriteria } from "../../utils";
@@ -37,9 +36,6 @@ export default class Character extends BaseEntity{
 
     @Column({type: 'int4', name: 'magik'})
     magik: number;
-
-    @Column({type: 'varchar', name: 'type', enum: CHAR_TYPE })
-    type?: CHAR_TYPE;
 
     @Column({type: 'uuid', name: 'userid'})
     userId?: string;
@@ -86,10 +82,6 @@ export default class Character extends BaseEntity{
 
             if(!char.userId){
                 char.userId = data.userId ?? undefined;
-            }
-
-            if(!char.type){
-                char.type = char.userId? CHAR_TYPE.PC : CHAR_TYPE.ENEMY;
             }
 
             return await char.save();

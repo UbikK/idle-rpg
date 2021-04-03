@@ -6,6 +6,5 @@ const Constants = {
     db_password: process.env.POSTGRES_PASSWORD || '281ff8e771e4ea2a27b67e3803e889b1ed2ffdddab7970345e8a8743b8f328d0',
     jwt_secret: '69EaRRg8nyTRy5'
 }
-export enum CHAR_TYPE {ENEMY= 'enemy', PC='pc'};
 
 export default Constants;
