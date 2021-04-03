@@ -58,6 +58,7 @@ export default class Fight extends BaseEntity {
             fight.winnerId = input.winner ?? undefined;
             fight.looserId = input.looser ?? undefined;
             fight.date = input.date?? undefined;
+            fight.save();
         } catch(e) {
             logger.error(e);
             throw e;

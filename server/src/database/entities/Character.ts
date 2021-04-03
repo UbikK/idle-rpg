@@ -126,17 +126,43 @@ export const selectOpponent = async (charId: string): Promise<{player: Character
 
             const opList:Character[] = await Character.find(
                 {where: [
-                    {id: Not(charId), userId: Not(player.userId), lastFight:LessThan(lastHour.toSQL())},
+                    {id: Not(charId), userId: Not(player.userId)},
+                    {id: Not(charId), userId: IsNull()}
+                    /* {id: Not(charId), userId: Not(player.userId), lastFight:LessThan(lastHour.toSQL())},
                     {id: Not(charId), userId: Not(player.userId), lastFight:IsNull()},
                     {id: Not(charId), userId: IsNull(), lastFight:LessThan(lastHour.toSQL())},
-                    {id: Not(charId), userId: IsNull(), lastFight:IsNull()}
+                    {id: Not(charId), userId: IsNull(), lastFight:IsNull()} */
                     ]
                 })
-            logger.info(opList, 'opList')
 
-        if (opList.length > 0){
+                const availableFighters = opList.filter((o) => {
+                    const fightsWithPlayer = o.fightsAsEnemy?.filter(f => f.playerCharacterId === player.id);
+                    if(fightsWithPlayer && fightsWithPlayer.length > 0){
+                        const lastFightWithPlayer = fightsWithPlayer?.sort((a, b) => {
+                            if(DateTime.fromSQL(a.date as string) > DateTime.fromSQL(b.date as string)){
+                                return -1
+                            } else if(DateTime.fromSQL(a.date as string) < DateTime.fromSQL(b.date as string)){
+                                return 1
+                            } else {
+                                return 0
+                            }
+                        });
+                        if(lastFightWithPlayer && lastFightWithPlayer.length > 0){
+                            const lastFight = lastFightWithPlayer[0];
+                            if(DateTime.fromSQL(lastFight.date as string).diff(now, 'hours').hours > 1){
+                                return o;
+                            }
+                        } else return o;
+                    } else {
+                        return o;
+                    }
+                    
+                })
+            logger.info(availableFighters, 'opList')
+
+        if (availableFighters.length > 0){
             // get enemies with closest rank to player
-            const sortedByRank = sortListByCriteria(opList, {name: 'rank', value:((v: number) => {return v - (player.rank as number)})});
+            const sortedByRank = sortListByCriteria(availableFighters, {name: 'rank', value:((v: number) => {return v - (player.rank as number)})});
             logger.info(sortedByRank, 'sortedbyRank')
             if (sortedByRank[0].list.length > 1){
                 // get enemies with less number of past fights with player

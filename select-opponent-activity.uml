@@ -2,7 +2,9 @@
     start
         :Select all available characters 
         different from Player;
-
+        :Filter opponents who 
+        fought with Player 
+        in the last hour;
         :Order by comparative rank;
         :Take first result;
         if(multiple choice?) then 
