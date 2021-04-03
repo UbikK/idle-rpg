@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import { Button, Container, Grid, Typography, Paper } from '@material-ui/core';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
@@ -36,15 +36,16 @@ const getFightQuery = gql`
 
 
 
-export default function Arena(){
-    const query = useUrlQuery();
+export default function Arena(props: any){
+    //const query = useUrlQuery();
     const history = useHistory();
-    const charId = query.get('charId');
+    const charId = props.charId
+    console.log(charId)
     const [playerId] = useState<string>(charId as string);
     
-    const{data} = useQuery(getFightQuery, {fetchPolicy: 'network-only', variables:{charId: playerId}});
-    const [player, setPlayer] = useState<Character>(data?.fightSetting.opponent);
-    const [opponent, setOpponent] = useState<Character>(data?.fightSetting.player);
+    const [getFight, {data: fightData}] = useLazyQuery(getFightQuery, {fetchPolicy: 'network-only', variables:{charId: charId}});
+    const [player, setPlayer] = useState<Character>(fightData?.fightSetting.opponent);
+    const [opponent, setOpponent] = useState<Character>(fightData?.fightSetting.player);
     const [combatReport, setCombatReport] = useState<any[]>();
     const [winner, setWinner] = useState<boolean>();
     const [startFight, setStartFight] = useState<boolean>(false)
@@ -59,15 +60,25 @@ export default function Arena(){
     }
 
     useEffect(() => {
-        if (data) {
+        if(!player && !opponent) getFight()
+
+        if(fightData?.fightSetting){
+            setPlayer(fightData.fightSetting.player);
+            setOpponent(fightData.fightSetting.opponent);
+        }
+        
+        /* if(playerId) {
+            getOpponent()
+        } */
+        /* if (data) {
             console.log(data)
             setOpponent(data.fightSetting.opponent);
             setPlayer(data.fightSetting.player);
-        }
+        } */
         if(combatReport){
             setEndFight(true)
         }
-    }, [playerId, data, /* getFight, */ combatReport]);
+    }, [playerId,  getFight,  combatReport, fightData, opponent, player]);
 
     useEffect(() => {
         async function getCombatReport (playerId: string, opponentId: string) {

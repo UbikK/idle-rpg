@@ -2,7 +2,7 @@ import test from "ava";
 import Character from "../database/entities/Character";
 import Fight from "../database/entities/Fight";
 import { roll, sortListByCriteria } from "../utils";
-import { enemies, sortedByRank, sortedByRankOnlyOne } from './EnemiesList';
+import { enemies, sortedByFights, sortedByRank, sortedByRankOnlyOne } from './EnemiesList';
 
 test('sort by ranks', t => {
     const sortedByRank = sortListByCriteria(enemies, {name: 'rank', value:((v: number) => {return v - 1})});
@@ -52,12 +52,28 @@ test('roll: test on 1d6', t => {
     let i: number = 0
     const results = [];
     while (i <= max){
-        results.push(roll(5));
+        results.push(roll(max));
         i++;
     }
     t.assert(results.length == 7);
     t.log(results)
     results.forEach((n) => {
         t.assert((0 < n) && (n <= max));
+    })
+})
+
+test('roll: test on array length', t => {
+    const list = [1,2,3,4,5,6]
+    const max = list.length - 1;
+    let i: number = 0
+    const results = [];
+    while (i <= list.length){
+        results.push(roll(max, true));
+        i++;
+    }
+    t.assert(results.length == 7);
+    t.log(results)
+    results.forEach((n) => {
+        t.assert((0 <= n) && (n <= max));
     })
 })

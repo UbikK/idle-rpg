@@ -11,6 +11,8 @@ import SignIn from './components/Signin';
 import CharacterSelect from './components/CharacterSelect';
 import Navigation from './components/Navigation';
 import Arena from './components/Arena';
+import { useUrlQuery } from './services/Utils';
+import Router from './components/Router';
 
 
 
@@ -30,18 +32,8 @@ function App() {
         <BrowserRouter>
           <Navigation/>
             <Switch>
-
-              <Route exact path="/"><Home/></Route>
+              <Router/>
               
-              <Route exact path="/signup"><SignUp/></Route>
-              <Route exact path="/signin"><SignIn/></Route>
-
-              <PrivateRoute path="/character-select">
-                <CharacterSelect/>
-              </PrivateRoute>
-              <PrivateRoute path="/arena">
-                <Arena/>
-              </PrivateRoute>
             </Switch>
         </BrowserRouter>
       </ProvideAuth>
@@ -61,28 +53,6 @@ function ProvideAuth({ children }:any) {
   );
 }
 
-function PrivateRoute({ children, ...rest }: any) {
-let auth = useAuth();
-console.log(auth)
-return (
-  <Route
-    {...rest}
-    render={({ location }) =>
-      auth?.token ? (
-        children
-      ) : (
-        <Redirect
-          to={{
-            pathname: "/signin",
-            state: { from: location }
-          }}
-
-        />
-      )
-    }
-  />
-);
-}
 
 
 export default App;

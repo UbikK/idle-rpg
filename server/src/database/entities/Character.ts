@@ -168,7 +168,10 @@ export const selectOpponent = async (charId: string): Promise<{player: Character
                     logger.info(sortedByFights, 'sortedByFights')
                 if (sortedByFights[0].list.length > 1){
                     // get random enemy with closest rank and lower number of fights with player
-                    fightSetting.opponent = sortedByFights[0].list[roll(sortedByFights[0].list.length - 1)];
+                    const rollResult =roll(sortedByFights[0].list.length - 1, true);
+                    logger.info(rollResult.toString(), 'roll result')
+                    logger.info(sortedByFights[0].list[rollResult], 'selected')
+                    fightSetting.opponent = sortedByFights[0].list[rollResult];
                     return fightSetting;
                 } else {
                     fightSetting.opponent = sortedByFights[0].list[0];

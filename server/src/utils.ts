@@ -22,8 +22,11 @@ export function checkUser(req: Request, res: Response, next: NextFunction) {
     }
 }
 
-export function roll(maxValue: number){
-    return Math.round(Math.random() * maxValue) + 1;
+export function roll(maxValue: number, forArray?: boolean){
+    if(forArray){
+        return Math.floor(Math.random() * maxValue)
+    }
+    return Math.ceil(Math.random() * maxValue);
 }
 
 export function sortListByCriteria(list: {[key: string]: any}[], criteria: {name: string, value: Function}) {
