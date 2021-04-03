@@ -64,10 +64,10 @@ export default class User extends BaseEntity {
 
     static async getByUsername(username: string): Promise<User>{
         try {
-            return await this.createQueryBuilder('user').where('username = :data', {data: username}).getOneOrFail();
+            return await this.findOneOrFail({where: {username: username}})
         } catch(e) {
             logger.error(e);
-            throw e;
+            throw new Error('Nom d\'utilisateur ou mot de passe incorrect');
         }
     }
 
