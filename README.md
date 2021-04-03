@@ -4,8 +4,7 @@ Bienvenue dans Mon Petit RPG, créé pour theTribe!
 ## Description
 Mon Petit RPG est un idle RPG écrit en NodeJS et ReactJS, reposant sur une base de données PostgresSQL et hébergé sur Heroku.
 
-Vous pouvez accéder à l'application live <a href="https://mon-petit-rpg.herokuapp.com/" target="_blank">ici</a>
-
+Vous pouvez accéder à l'application live [ici](https://mon-petit-rpg.herokuapp.com/)
 ## Mode d'emploi
 ### Installation
  - Cloner le dépôt
