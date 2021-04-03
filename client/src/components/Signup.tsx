@@ -36,7 +36,7 @@ export default function SignUp(){
     const [pwd, setPwd] = useState<string>();
     const [firstname, setFirstname] = useState<string>();
     const [lastname, setLastname] = useState<string>();
-    const [signup, {data}] = useMutation(signupMutation);
+    const [signup] = useMutation(signupMutation);
     const auth = useAuth();
 
     let history = useHistory();

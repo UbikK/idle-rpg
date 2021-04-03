@@ -30,7 +30,7 @@ export default function SignIn(/* props: {setToken: Function} */){
     const classes = useStyles();
     const [username, setUsername] = useState<string>();
     const [pwd, setPwd] = useState<string>();
-    const [login, {data}] = useMutation(loginMutation);
+    const [login] = useMutation(loginMutation);
     let history = useHistory();
     let location = useLocation();
     const auth = useAuth();

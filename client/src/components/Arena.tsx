@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Button, Container, Grid, Typography, Paper } from '@material-ui/core';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
@@ -41,9 +41,10 @@ export default function Arena(){
     const history = useHistory();
     const charId = query.get('charId');
     const [playerId] = useState<string>(charId as string);
-    const [player, setPlayer] = useState<Character>();
-    const [opponent, setOpponent] = useState<Character>();
-    const [getFight, {data}] = useLazyQuery(getFightQuery);
+    
+    const{data} = useQuery(getFightQuery, {fetchPolicy: 'network-only', variables:{charId: playerId}});
+    const [player, setPlayer] = useState<Character>(data?.fightSetting.opponent);
+    const [opponent, setOpponent] = useState<Character>(data?.fightSetting.player);
     const [combatReport, setCombatReport] = useState<any[]>();
     const [winner, setWinner] = useState<boolean>();
     const [startFight, setStartFight] = useState<boolean>(false)
@@ -58,10 +59,6 @@ export default function Arena(){
     }
 
     useEffect(() => {
-        if(playerId) {
-            getFight({variables: {charId: playerId}, context:{fetchPolicy: 'network-only', newFecthPolicy: 'cache-first'}});
-        }
-
         if (data) {
             console.log(data)
             setOpponent(data.fightSetting.opponent);
@@ -70,19 +67,11 @@ export default function Arena(){
         if(combatReport){
             setEndFight(true)
         }
-    }, [playerId, data, getFight, combatReport]);
+    }, [playerId, data, /* getFight, */ combatReport]);
 
     useEffect(() => {
         async function getCombatReport (playerId: string, opponentId: string) {
-            /* const body = {
-                playerId: playerId,
-                opponentId: opponentId
-            }
-            const request = await fetch('api/fight', {
-                method: 'POST',
-                body: JSON.stringify(body),
-                headers: {'Content-Type': 'application/json'}
-            }); */
+            
     
             const fightResult = await executeFight(playerId, opponentId);
             console.log(fightResult)

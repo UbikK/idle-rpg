@@ -31,7 +31,7 @@ const editCharacterMutation = gql`
 export default function CharacterEditor(props: any){
     const [open, setOpen] = useState(props.open);
     const [character] = useState(props.character ?? {name: '', skillpoints: 12, health:10, attack: 0, defense: 0, magik: 0, rank: 1});
-    const [editCharacter, {data}] = useMutation(editCharacterMutation);
+    const [editCharacter] = useMutation(editCharacterMutation);
     const [name, setName] = useState<string>();
     const [skillpoints, setSkillpoints] = useState(character.skillpoints);
 
@@ -143,7 +143,9 @@ export default function CharacterEditor(props: any){
             <form onSubmit={handleSubmit} className={classes.form}>
                 <DialogContent>
                     <Grid container direction="column" justify="center">
-                        <TextField
+                        {
+                            props.character?
+                            <TextField
                             name="name"
                             label="Nom"
                             id="name"
@@ -151,8 +153,18 @@ export default function CharacterEditor(props: any){
                             margin="normal"
                             value={character?.name}
                             onChange={handleChange}
-                            disabled={character?.name ? true :false}
+                            disabled
+                            />
+                            :
+                            <TextField
+                            name="name"
+                            label="Nom"
+                            id="name"
+                            required
+                            margin="normal"
+                            onChange={handleChange}
                         />
+                        }
                         <TextField
                             name="skillpoints"
                             label="Points de compétence"

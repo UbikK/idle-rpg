@@ -1,5 +1,5 @@
-import { gql, useLazyQuery, useQuery } from '@apollo/client';
-import { Button, Grid, Hidden, makeStyles, Paper, Typography } from '@material-ui/core';
+import { gql, useLazyQuery } from '@apollo/client';
+import { Button, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useJwt } from 'react-jwt';
 import Character from '../models/Character.model';
@@ -82,17 +82,19 @@ export default function CharacterSelect(props: any){
     const isAvailable = (char: Character) => {
         const now = DateTime.now();
         const lastFight = DateTime.fromMillis(parseInt(char?.lastFight as string));
-            if (now.diff(lastFight, 'hours').hours > 1) {
+            if (now.diff(lastFight, 'hours').hours > 1 || !char.lastFight) {
                 return true
             } else {
                 return false
             }
     }
 
+
     useEffect(() => {
-        if((decodedToken?.id || refresh) && !charList) {
-            setUserId(decodedToken.id)
+        if((decodedToken?.id && !charList) || refresh) {
+            if (!userId) setUserId(decodedToken.id);
             getChars({variables: {userId: decodedToken.id}})
+            setRefresh(false)
         }
         if(characterList){
             console.log(`Character list:: ${JSON.stringify(characterList)}`)
@@ -102,7 +104,7 @@ export default function CharacterSelect(props: any){
             console.log(`fights:: ${JSON.stringify(fights)}`)
             setFightHistory(fights.fightsForCharacter)
         }
-    }, [decodedToken, characterList, getChars, refresh, fights,errorFights]);
+    }, [userId, decodedToken, characterList, getChars, refresh, fights,errorFights, charList]);
 
     if(loading) return (<div>loading</div>);
     const creationOK = charList?.length as number < 10;
@@ -158,7 +160,7 @@ export default function CharacterSelect(props: any){
                             <CharacterSheet character={character}/>
                         </Grid> 
                         <Grid item container alignItems="center" justify="space-evenly" direction="row">
-                            <Button color="primary" variant="outlined" onClick={() => setDisplayHisto(!displayHisto)}>Historique</Button>
+                            {(fightHistory?.length > 0) ?<Button color="primary" variant="outlined" onClick={() => setDisplayHisto(!displayHisto)}>Historique</Button>: undefined}
                             <Button color="primary" variant="contained" >
                                 <Link to={`/arena?charId=${character.id}`} className={classes.create}>Entrer dans l'arène</Link>
                             </Button> 

@@ -126,8 +126,10 @@ export const selectOpponent = async (charId: string): Promise<{player: Character
 
             const opList:Character[] = await Character.find(
                 {where: [
-                    {id: Not(charId), lastFight:LessThan(lastHour.toSQL())},
-                    {id: Not(charId), lastFight:IsNull()}
+                    {id: Not(charId), userId: Not(player.userId), lastFight:LessThan(lastHour.toSQL())},
+                    {id: Not(charId), userId: Not(player.userId), lastFight:IsNull()},
+                    {id: Not(charId), userId: IsNull(), lastFight:LessThan(lastHour.toSQL())},
+                    {id: Not(charId), userId: IsNull(), lastFight:IsNull()}
                     ]
                 })
             logger.info(opList, 'opList')
