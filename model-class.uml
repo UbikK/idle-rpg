@@ -68,12 +68,19 @@ Interface IFight {
     winner: string
     looser: string
 }
+hide IUser methods
+hide ICharacter methods
+hide IFight methods
 
+<> diamond
 User -down- IUser
 Character -down- ICharacter
 Fight-IFight
-User "1" -left-> "*"Character: > have
-Character"1" -up-> "*"Fight: > as player
-Character"1" -down-> "*"Fight: > as enemy
+User "1" -right-> "*"Character: > have
+
+
+Character - diamond
+diamond - "Player 1..*" Fight
+diamond - "Enemy 1..* " Fight
 
 @enduml
