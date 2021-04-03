@@ -1,6 +1,5 @@
-import { GraphQLInputObjectType, GraphQLInt, GraphQLList, GraphQLObjectType, GraphQLString } from "graphql";
 import { DateTime } from "luxon";
-import { BaseEntity, Brackets, Column, Entity, In, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { BaseEntity, Column, Entity, In, JoinColumn, LessThan, ManyToOne, Not, OneToMany, PrimaryColumn } from "typeorm";
 import { v4 } from "uuid";
 import { CHAR_TYPE } from "../../constants";
 import logger from "../../logger";
@@ -104,15 +103,6 @@ export default class Character extends BaseEntity{
         if(withFight){
             options =  {relations:['fightsAsPlayer', 'fightsAsPlayer.winner', 'fightsAsPlayer.looser', 'fightsAsPlayer.player', 'fightsAsPlayer.enemy']}
         }
-        /* const char = await this.createQueryBuilder('char')
-            .where('char.id::"varchar" = :id', {id: id})
-            .leftJoinAndSelect(Fight, 'fights', 'fights.playerCharacterId::"varchar" = char.Id::"varchar"')
-            .select('fights.playerCharacterId')
-            .addSelect('fights.enemyCharacterId')
-            .addSelect('char.id')
-            .addSelect('char.fightsAsPlayer')
-            .getOne()
-            return char */
         return this.findOne(id,options);
     }
 
@@ -127,7 +117,7 @@ export default class Character extends BaseEntity{
     
 }
 
-export async function selectOpponent(charId: string): Promise<{player: Character, opponent?: Character}> {
+export const selectOpponent = async (charId: string): Promise<{player: Character, opponent?: Character}> =>{
     try {
         const player = await Character.findOneOrFail(charId);
         const fightSetting = {
@@ -137,13 +127,7 @@ export async function selectOpponent(charId: string): Promise<{player: Character
         const now = DateTime.now();
         const lastHour = now.minus({hours: 1});
 
-        let opList = await Character.createQueryBuilder('ops')
-            .where('ops.id != :playerId', {playerId: player.id})
-            .andWhere(new Brackets((qb) => {
-                qb.where('lastFight < :lastHour', {lastHour: lastHour.toSQL()})
-                    .orWhere('lastFight is null')
-            }))
-            .getMany();
+            const opList = await Character.find({where: {id: Not(charId), lastFight:LessThan(lastHour.toSQL())}})
             logger.info(opList, 'opList')
 
         if (opList.length > 0){
@@ -169,7 +153,7 @@ export async function selectOpponent(charId: string): Promise<{player: Character
                 }
             } else {
                 fightSetting.opponent = sortedByRank[0].list[0];
-                return fightSetting//sortedByRank[0].list[0];
+                return fightSetting
             }
         } else return fightSetting
         

@@ -9,7 +9,7 @@ import { IRound } from "../interfaces/Round.interface";
 import logger from "../logger";
 import { roll } from "../utils";
 
-export async function startFight(playerId: string, opponentId: string) {
+export const startFight = async (playerId: string, opponentId: string) => {
   try {
     const player = (await Character.getCharacterById(playerId)) as ICharacter;
     const opponent = (await Character.getCharacterById(
@@ -37,11 +37,11 @@ export async function startFight(playerId: string, opponentId: string) {
   }
 }
 
-export async function executeRound(
+export const executeRound = async (
   player: ICharacter,
   enemy: ICharacter,
   list: IRound[]
-): Promise<IRound[]> {
+): Promise<IRound[]> => {
   let roundReport: IRound = {
     roundNumber: list.length + 1,
     player: {
@@ -89,21 +89,10 @@ export async function executeRound(
   }
 }
 
-/* function handleAttackResult(data: IAttack, defender: ICharacter){
-    const result: any = {
-        oldDefenderHealth: defender.health,
-        newDefenderHealth: data.isSuccess? defender.health - data.attackValue : defender.health
-    }
-    
-    result.diff = result.oldDefenderHealth - result.newDefenderHealth;
-    
-    return result;
-} */
-
-export function executeAttack(
+export const executeAttack = (
   attacker: ICharacter,
   defender: ICharacter
-): IAttackReport {
+): IAttackReport => {
   try {
     let attackValue: number;
     const attack: IAttack = {
