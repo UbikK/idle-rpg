@@ -43,4 +43,4 @@ Depuis le dossier racine de l'application, lancer les scripts suivants:
   - Luxon
   - Material-UI (CSS)
 
-Vous pouvez trouver les différents diagrammes [ici](UbikK/idle-rpg/out/diagrams)
+Vous pouvez trouver les différents diagrammes [ici](out/diagrams)
