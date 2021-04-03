@@ -36,7 +36,7 @@ export default function SignUp(){
     const [pwd, setPwd] = useState<string>();
     const [firstname, setFirstname] = useState<string>();
     const [lastname, setLastname] = useState<string>();
-    const [signup] = useMutation(signupMutation);
+    const [signup, {error}] = useMutation(signupMutation);
     const auth = useAuth();
 
     let history = useHistory();
@@ -74,10 +74,15 @@ export default function SignUp(){
             firstname: firstname,
             lastname: lastname
         };
-        const userData = await signup({variables: {user: user}});
-        console.log(userData)
-        auth?.signin(userData.data.token);
-        history.push("/character-select");
+        try {
+            const userData = await signup({variables: {user: user}});
+            console.log(userData)
+            auth?.signin(userData.data.token);
+            history.push("/character-select");
+        } catch (e) {
+            console.error(e);
+        }
+        
     }
 
     return (
@@ -150,6 +155,7 @@ export default function SignUp(){
                             className={classes.submit}
                         >Connexion
                         </Button>
+                        {error? <Typography variant="subtitle1" style={{color:'red'}}>{error.message}</Typography>: undefined}
                     </Grid>
                 </form>
             </div>

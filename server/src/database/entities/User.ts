@@ -39,6 +39,10 @@ export default class User extends BaseEntity {
 
     static async createUser(data: IUser){
         try {
+            const exists = await this.find({where:{username: data.username}});
+            if(exists?.length > 0){
+                throw new Error('Utilisateur existant')
+            }
             let user = new User();
             user.username = data.username;
             user.password = hashSync(data.pwd, 256);
@@ -98,10 +102,12 @@ export async function login(input: { username: string; pwd: string }) {
         if (checkPwd) {
           const token = getLoginToken(user);
           return token;
+        } else {
+            throw new Error('Nom d\'utilisateur ou mot de passe incorrect');
         }
       }
     } catch (e) {
       logger.error(e);
-      throw e;
+      return e;
     }
   }

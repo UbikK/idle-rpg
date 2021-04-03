@@ -30,7 +30,7 @@ export default function SignIn(/* props: {setToken: Function} */){
     const classes = useStyles();
     const [username, setUsername] = useState<string>();
     const [pwd, setPwd] = useState<string>();
-    const [login] = useMutation(loginMutation);
+    const [login, {error}] = useMutation(loginMutation);
     let history = useHistory();
     let location = useLocation();
     const auth = useAuth();
@@ -50,17 +50,18 @@ export default function SignIn(/* props: {setToken: Function} */){
 
     const handleSubmit = async (event: any) => {
       event.preventDefault();
+      try{
       const loginData = await login({variables: {user: {username: username, pwd: pwd}}});
       console.log(loginData.data.login);
+        auth?.signin(loginData.data.login, () => {
+            history.replace(from);
+          });
+      } catch(e) {
+          console.error(e)
+      }
       
-      auth?.signin(loginData.data.login, () => {
-        history.replace(from);
-      });
-      
-        
-        
-      //props.setToken(loginData.data.login)
     }
+ 
     return(
         <Container component="main" maxWidth="xs">
             <CssBaseline/>
@@ -100,6 +101,7 @@ export default function SignIn(/* props: {setToken: Function} */){
                             className={classes.submit}
                         >Connexion
                         </Button>
+                        {error? <Typography variant="subtitle1" style={{color:'red'}}>{error.message}</Typography>: undefined}
                     </Grid>
                     
                 </form>
