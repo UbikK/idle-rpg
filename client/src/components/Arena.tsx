@@ -1,12 +1,11 @@
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { Button, Container, Grid, Typography, Paper } from '@material-ui/core';
 import gql from 'graphql-tag';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Character from '../models/Character.model';
 import ReportLine from '../models/ReportLine.model';
 import { executeFight } from '../services/ApiService';
-import { useUrlQuery } from '../services/Utils';
 import CharacterSheet from './CharacterSheet';
 
 const getFightQuery = gql`
@@ -40,7 +39,6 @@ export default function Arena(props: any){
     //const query = useUrlQuery();
     const history = useHistory();
     const charId = props.charId
-    console.log(charId)
     const [playerId] = useState<string>(charId as string);
     
     const [getFight, {data: fightData}] = useLazyQuery(getFightQuery, {fetchPolicy: 'network-only', variables:{charId: charId}});

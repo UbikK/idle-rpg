@@ -12,7 +12,6 @@ import CharacterSelect from './components/CharacterSelect';
 import Navigation from './components/Navigation';
 import Arena from './components/Arena';
 import { useUrlQuery } from './services/Utils';
-import Router from './components/Router';
 
 
 
@@ -32,8 +31,15 @@ function App() {
         <BrowserRouter>
           <Navigation/>
             <Switch>
-              <Router/>
+            <Route exact path="/"><Home/></Route>
               
+              <Route exact path="/signup"><SignUp/></Route>
+              <Route exact path="/signin"><SignIn/></Route>
+
+              <PrivateRoute path="/character-select">
+                <CharacterSelect/>
+              </PrivateRoute>
+              <ArenaRoute/>
             </Switch>
         </BrowserRouter>
       </ProvideAuth>
@@ -52,7 +58,37 @@ function ProvideAuth({ children }:any) {
     </authContext.Provider>
   );
 }
+function PrivateRoute({ children, ...rest }: any) {
+  let auth = useAuth();
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        auth?.token ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/signin",
+              state: { from: location }
+            }}
+  
+          />
+        )
+      }
+    />
+  );
+  }
 
+function ArenaRoute() {
+  const query = useUrlQuery();
+  return (
+    <PrivateRoute path="/arena">
+      <Arena charId={query.get('charId')}/>
+    </PrivateRoute>
+  )
+}
+  
 
 
 export default App;
