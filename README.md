@@ -9,6 +9,7 @@ Vous pouvez accéder à l'application live [ici](https://mon-petit-rpg.herokuapp
 ### Installation
  - Cloner le dépôt
  - Lancer `npm install`
+ - Dans le dossier `client`, lancer `npm install`
 
 ### Lancement en local avec hot reload
 Depuis le dossier racine de l'application, lancer les scripts suivants:
