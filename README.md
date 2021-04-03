@@ -17,6 +17,7 @@ Depuis le dossier racine de l'application, lancer les scripts suivants:
  - Lancement du front: `npm run start:front`
 
 Les informations de connexion à la base de données sont disponibles dans le fichier [Constants](server/src/constants.ts)
+(placer la variable d'environnement PGSSLREQUIRE à true pour permettre la connexion)
 
 ### Lancement en mode build
 Depuis le dossier racine de l'application, lancer les scripts suivants:
