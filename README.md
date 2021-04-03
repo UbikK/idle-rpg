@@ -16,7 +16,7 @@ Depuis le dossier racine de l'application, lancer les scripts suivants:
  - Lancement du serveur: `npm run start:dev`
  - Lancement du front: `npm run start:front`
 
-Les informations de connexion à la base de données sont disponibles dans le fichier [Constants](src/contants.ts)
+Les informations de connexion à la base de données sont disponibles dans le fichier [Constants](src/constants.ts)
 
 ### Lancement en mode build
 Depuis le dossier racine de l'application, lancer les scripts suivants:
