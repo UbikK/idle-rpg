@@ -9,11 +9,14 @@ Vous pouvez accéder à l'application live [ici](https://mon-petit-rpg.herokuapp
 ### Installation
  - Cloner le dépôt
  - Lancer `npm install`
+
 ### Lancement en local avec hot reload
 Depuis le dossier racine de l'application, lancer les scripts suivants:
  - Build du serveur: `npm run build:watch`
  - Lancement du serveur: `npm run start:dev`
  - Lancement du front: `npm run start:front`
+
+Les informations de connexion à la base de données sont disponibles dans le fichier [Constants](src/contants.ts)
 
 ### Lancement en mode build
 Depuis le dossier racine de l'application, lancer les scripts suivants:
@@ -23,6 +26,7 @@ Depuis le dossier racine de l'application, lancer les scripts suivants:
  
 
 ## Technique
+L'application est hébergée sur Heroku
   ### Backend
   Le backend est écrit en NodeJS/Typescript
   
@@ -33,6 +37,7 @@ Depuis le dossier racine de l'application, lancer les scripts suivants:
   - Luxon (gestion du temps)
   - Ava (tests unitaires)
   - Bcrypt et jsonwebtoken (sécurité)
+  - PostgreSQL (base de donnée)
 
   ### Frontend
   Le frontend est écrit en ReactJS et Typescript
