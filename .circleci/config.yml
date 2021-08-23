@@ -33,12 +33,14 @@ workflows:
     jobs:
       - build-frontend
       - build-server
+        requires: 
+          - build-frontend
       - node/test
       - heroku/deploy-via-git:
           force: true
           requires:
             - node/test
-            - build-frontend
+            - build-server
           filters:
             branches:
               only: master
