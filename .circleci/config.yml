@@ -18,12 +18,22 @@ jobs:
           command: |
             npm install
             npm run build
-      
+ build-server:
+    executor: ubuntu
+    working_directory: ~/project/
+    steps:
+      - checkout:
+          path: ~/project
+      - run: 
+          command: |
+            npm ci
+            npm test
+            npm run build --if-present
 workflows:
   deploy:
     jobs:
-      - node/test
       - build-frontend
+      - build-server
       - heroku/deploy-via-git:
           force: true
           requires:
