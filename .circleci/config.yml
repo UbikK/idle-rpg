@@ -12,10 +12,10 @@ jobs:
     executor: ubuntu
     working_directory: ./client
     steps:
-      run: 
-        command: |
-        "npm install"
-        "npm run build"
+      - run: 
+          command: |
+            npm install
+            npm run build
       
 workflows:
   deploy:
