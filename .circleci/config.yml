@@ -14,8 +14,8 @@ jobs:
     steps:
       run: 
         command: |
-        npm install
-        npm run build
+        "npm install"
+        "npm run build"
       
 workflows:
   deploy:
