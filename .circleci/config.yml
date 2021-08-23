@@ -12,7 +12,8 @@ jobs:
     executor: ubuntu
     working_directory: ./client
     steps:
-      run: |
+      run: 
+        command: |
         npm install
         npm run build
       
