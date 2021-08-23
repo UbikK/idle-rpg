@@ -12,9 +12,8 @@ jobs:
     working_directory: ./client
     steps:
       run: 
-        command: npm install
-      run: 
-        command: npm run build
+        - command: npm install
+        - command: npm run build
       
 workflows:
   deploy:
