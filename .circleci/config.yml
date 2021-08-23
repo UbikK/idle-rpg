@@ -18,7 +18,7 @@ jobs:
           command: |
             npm install
             npm run build
- build-server:
+  build-server:
     executor: ubuntu
     working_directory: ~/project/
     steps:
