@@ -32,7 +32,7 @@ workflows:
   deploy:
     jobs:
       - build-frontend
-      - build-server
+      - build-server:
           requires: 
             - build-frontend
       - node/test
