@@ -3,15 +3,29 @@ version: 2.1
 orbs:
   node: circleci/node@4.7
   heroku: circleci/heroku@1.2
-
+ executors:
+  ubuntu:
+    machine:
+      image: ubuntu-2004:202010-01
+jobs:
+  build-frontend:
+    working_directory: ./client
+    steps:
+      run: 
+        command: npm install
+      run: 
+        command: npm run build
+      
 workflows:
   deploy:
     jobs:
       - node/test
+      - build-frontend
       - heroku/deploy-via-git:
           force: true
           requires:
-            - node/test # only run deploy-via-git job if the build job has completed
+            - node/test
+            - build-frontend
           filters:
             branches:
               only: master
