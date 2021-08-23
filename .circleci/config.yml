@@ -9,6 +9,7 @@ executors:
       image: ubuntu-2004:202010-01
 jobs:
   build-frontend:
+    executor: ubuntu
     working_directory: ./client
     steps:
       run: 
