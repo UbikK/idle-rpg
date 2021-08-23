@@ -27,13 +27,13 @@ jobs:
       - run: 
           command: |
             npm ci
-            npm test
             npm run build --if-present
 workflows:
   deploy:
     jobs:
       - build-frontend
       - build-server
+      - node/test
       - heroku/deploy-via-git:
           force: true
           requires:
