@@ -10,7 +10,7 @@ executors:
 jobs:
   build-frontend:
     executor: ubuntu
-    working_directory: ./client
+    working_directory: ~/project/client
     steps:
       - run: 
           command: |
