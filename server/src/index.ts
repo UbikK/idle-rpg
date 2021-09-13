@@ -50,6 +50,7 @@ async function startApolloServer() {
 }
 startApolloServer()
   .then(() => {
+    logger.info("it's alive!");
     logger.info("up and running");
     console.log(join(__dirname, '../client/build'))
   })
